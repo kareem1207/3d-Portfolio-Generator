@@ -3,23 +3,39 @@ import { useState, useEffect } from "react";
 import usePortfolioStore from "@/store/portfolioStore";
 import styles from "@/styles/contentForm.module.css";
 
+const defaultFormData = {
+  name: "",
+  title: "",
+  bio: "",
+  skills: "",
+  socialLinks: {
+    github: "",
+    linkedin: "",
+    twitter: "",
+  },
+};
+
 export default function ContentForm({ onUpdate }) {
   const { setUserData, userData } = usePortfolioStore();
-  const [formData, setFormData] = useState({
-    name: "",
-    title: "",
-    bio: "",
-    skills: "",
+  const [formData, setFormData] = useState(() => ({
+    ...defaultFormData,
+    ...userData,
     socialLinks: {
-      github: "",
-      linkedin: "",
-      twitter: "",
+      ...defaultFormData.socialLinks,
+      ...(userData?.socialLinks || {}),
     },
-  });
+  }));
 
   useEffect(() => {
     if (userData) {
-      setFormData(userData);
+      setFormData((prev) => ({
+        ...prev,
+        ...userData,
+        socialLinks: {
+          ...prev.socialLinks,
+          ...(userData.socialLinks || {}),
+        },
+      }));
     }
   }, [userData]);
 
@@ -29,10 +45,16 @@ export default function ContentForm({ onUpdate }) {
       const [parent, child] = name.split(".");
       setFormData((prev) => ({
         ...prev,
-        [parent]: { ...prev[parent], [child]: value },
+        [parent]: {
+          ...prev[parent],
+          [child]: value,
+        },
       }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
@@ -105,7 +127,7 @@ export default function ContentForm({ onUpdate }) {
             type="url"
             id="github"
             name="socialLinks.github"
-            value={formData.socialLinks.github}
+            value={formData.socialLinks?.github || ""}
             onChange={handleChange}
             placeholder="https://github.com/yourusername"
           />
@@ -117,7 +139,7 @@ export default function ContentForm({ onUpdate }) {
             type="url"
             id="linkedin"
             name="socialLinks.linkedin"
-            value={formData.socialLinks.linkedin}
+            value={formData.socialLinks?.linkedin || ""}
             onChange={handleChange}
             placeholder="https://linkedin.com/in/yourusername"
           />
@@ -129,7 +151,7 @@ export default function ContentForm({ onUpdate }) {
             type="url"
             id="twitter"
             name="socialLinks.twitter"
-            value={formData.socialLinks.twitter}
+            value={formData.socialLinks?.twitter || ""}
             onChange={handleChange}
             placeholder="https://twitter.com/yourusername"
           />
