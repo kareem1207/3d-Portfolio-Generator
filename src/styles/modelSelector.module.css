@@ -1,0 +1,41 @@
+.modelSelector {
+  margin: 2rem 0;
+}
+
+.modelsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modelCard {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modelCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modelCard.selected {
+  border-color: #2a9d8f;
+  background: rgba(42, 157, 143, 0.1);
+}
+
+.modelPreview {
+  height: 100px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.modelCard p {
+  text-align: center;
+  margin: 0;
+  font-size: 0.9rem;
+}
