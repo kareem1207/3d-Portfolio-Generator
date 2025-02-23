@@ -7,136 +7,42 @@ import CustomizationPanel from "@/components/CustomizationPanel";
 import ContentForm from "@/components/ContentForm";
 import styles from "@/styles/create.module.css";
 import { templateConfigs, getTemplateDefaults } from "@/config/templateConfigs";
-import ModelSelector from "@/components/ModelSelector";
+import dynamic from "next/dynamic";
+import ClientOnly from "@/components/ClientOnly";
 
-// Inline Template Components
-const MinimalScene = () => {
-  return (
-    <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[2, 1, 1]} />
-        <meshStandardMaterial color="#2A9D8F" />
-      </mesh>
-      <mesh position={[0, 1, 0]}>
-        <sphereGeometry args={[0.5, 32, 32]} />
-        <meshStandardMaterial color="#264653" />
-      </mesh>
-    </>
-  );
-};
+const ModelSelector = dynamic(() => import("@/components/ModelSelector"), {
+  ssr: false,
+  loading: () => <div>Loading 3D components...</div>,
+});
 
-const CreativeScene = () => {
-  return (
-    <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
-      <mesh position={[-1, 0, 0]}>
-        <sphereGeometry args={[0.7, 32, 32]} />
-        <meshStandardMaterial color="#E76F51" />
-      </mesh>
-      <mesh position={[1, 0, 0]}>
-        <torusGeometry args={[0.5, 0.2, 16, 32]} />
-        <meshStandardMaterial color="#2A9D8F" />
-      </mesh>
-    </>
-  );
-};
-
-const ProfessionalScene = () => {
-  return (
-    <>
-      <ambientLight intensity={0.6} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <group position={[0, 0, 0]}>
-        <mesh position={[-1.5, 0, 0]}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial
-            color="#34495e"
-            metalness={0.8}
-            roughness={0.2}
-          />
-        </mesh>
-        <mesh position={[0, 0, 0]}>
-          <cylinderGeometry args={[0.5, 0.5, 1.5, 32]} />
-          <meshStandardMaterial
-            color="#3498db"
-            metalness={0.6}
-            roughness={0.3}
-          />
-        </mesh>
-        <mesh position={[1.5, 0, 0]}>
-          <dodecahedronGeometry args={[0.7]} />
-          <meshStandardMaterial
-            color="#2ecc71"
-            metalness={0.5}
-            roughness={0.4}
-          />
-        </mesh>
-      </group>
-    </>
-  );
-};
-
-const CustomScene = ({ customObjects = [] }) => {
-  return (
-    <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
-      {customObjects.map((obj, index) => (
-        <mesh key={index} position={obj.position}>
-          {obj.geometry === "box" && <boxGeometry args={obj.size} />}
-          {obj.geometry === "sphere" && <sphereGeometry args={obj.size} />}
-          {obj.geometry === "cylinder" && <cylinderGeometry args={obj.size} />}
-          <meshStandardMaterial color={obj.color} />
-        </mesh>
-      ))}
-    </>
-  );
-};
-
-const MinimalPreview = () => (
-  <Canvas camera={{ position: [3, 2, 5] }}>
-    <MinimalScene />
-    <OrbitControls enableZoom={false} />
-  </Canvas>
+// Dynamic imports for preview components
+const MinimalPreview = dynamic(
+  () =>
+    import("@/components/TemplatePreview").then((mod) => ({
+      default: mod.MinimalPreview,
+    })),
+  { ssr: false }
 );
-
-const CreativePreview = () => (
-  <Canvas camera={{ position: [3, 3, 3] }}>
-    <CreativeScene />
-    <OrbitControls enableZoom={false} />
-  </Canvas>
+const CreativePreview = dynamic(
+  () =>
+    import("@/components/TemplatePreview").then((mod) => ({
+      default: mod.CreativePreview,
+    })),
+  { ssr: false }
 );
-
-const ProfessionalPreview = () => (
-  <Canvas camera={{ position: [3, 2, 5] }}>
-    <ProfessionalScene />
-    <OrbitControls enableZoom={false} />
-  </Canvas>
+const ProfessionalPreview = dynamic(
+  () =>
+    import("@/components/TemplatePreview").then((mod) => ({
+      default: mod.ProfessionalPreview,
+    })),
+  { ssr: false }
 );
-
-const CustomPreview = () => (
-  <Canvas camera={{ position: [3, 2, 5] }}>
-    <CustomScene
-      customObjects={[
-        {
-          geometry: "box",
-          position: [-1, 0, 0],
-          size: [1, 1, 1],
-          color: "#e74c3c",
-        },
-        {
-          geometry: "sphere",
-          position: [1, 0, 0],
-          size: [0.5, 32, 32],
-          color: "#9b59b6",
-        },
-      ]}
-    />
-    <OrbitControls enableZoom={false} />
-  </Canvas>
+const CustomPreview = dynamic(
+  () =>
+    import("@/components/TemplatePreview").then((mod) => ({
+      default: mod.CustomPreview,
+    })),
+  { ssr: false }
 );
 
 // Add this preview components mapping before CreatePortfolio component
@@ -248,7 +154,9 @@ export default function CreatePortfolio() {
                 onClick={() => handleTemplateSelect(template)}
               >
                 <div className={styles.templatePreviewContainer}>
-                  <template.preview />
+                  <ClientOnly>
+                    {template.preview && <template.preview />}
+                  </ClientOnly>
                 </div>
                 <div className={styles.templateInfo}>
                   <h3>{template.name}</h3>
@@ -275,20 +183,24 @@ export default function CreatePortfolio() {
           <h2>Customize Your Portfolio</h2>
           <div className={styles.previewCustomizeContainer}>
             <div className={styles.livePreview}>
-              <selectedTemplate.preview
-                customization={{
-                  ...customization,
-                  selectedModels,
-                }}
-              />
+              <ClientOnly>
+                <selectedTemplate.preview
+                  customization={{
+                    ...customization,
+                    selectedModels,
+                  }}
+                />
+              </ClientOnly>
             </div>
             <div className={styles.customizationTools}>
               <CustomizationPanel onUpdate={handleCustomizationUpdate} />
-              <ModelSelector
-                templateId={selectedTemplate.id}
-                selected={selectedModels}
-                onSelect={handleModelSelect}
-              />
+              <ClientOnly>
+                <ModelSelector
+                  templateId={selectedTemplate.id}
+                  selected={selectedModels}
+                  onSelect={handleModelSelect}
+                />
+              </ClientOnly>
             </div>
           </div>
           <div className={styles.navigationButtons}>

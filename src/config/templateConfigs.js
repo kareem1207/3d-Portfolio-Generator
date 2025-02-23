@@ -85,16 +85,36 @@ export const templateConfigs = {
 
 export const getTemplateDefaults = (templateId) => {
   const config = templateConfigs[templateId];
-  return {
-    colors: Object.entries(config.customizationOptions.colors).reduce(
-      (acc, [key, value]) => {
-        acc[key] = value;
-        return acc;
+
+  if (!config || !config.customizationOptions) {
+    return {
+      colors: {
+        primary: "#2A9D8F",
+        secondary: "#264653",
+        background: "#ffffff",
       },
-      {}
-    ),
-    animations: config.customizationOptions.animations[0],
-    lighting: config.customizationOptions?.lighting?.[0],
+      animations: "none",
+      lighting: "soft",
+      material: {
+        metalness: 0,
+        roughness: 0.5,
+      },
+    };
+  }
+
+  const {
+    colors = {},
+    animations = [],
+    lighting = [],
+  } = config.customizationOptions;
+
+  return {
+    colors: Object.entries(colors).reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {}),
+    animations: animations[0] || "none",
+    lighting: lighting[0] || "soft",
     material: {
       metalness: config.customizationOptions?.materials?.metalness?.[0] ?? 0,
       roughness: config.customizationOptions?.materials?.roughness?.[0] ?? 0.5,

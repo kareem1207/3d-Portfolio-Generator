@@ -209,11 +209,13 @@ export default function Preview() {
         <button className={styles.publishButton}>Publish Portfolio</button>
       </div>
 
-      <SelectedTemplate
-        customization={settings.customization}
-        templateId={settings.templateId}
-        content={settings.content}
-      />
+      <div className={styles.previewCanvas}>
+        <SelectedTemplate
+          customization={settings.customization}
+          templateId={settings.templateId}
+          content={settings.content}
+        />
+      </div>
     </div>
   );
 }

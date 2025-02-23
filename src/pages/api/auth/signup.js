@@ -1,6 +1,5 @@
 import { hashPassword } from "@/utils/auth";
 import { prisma } from "@/lib/prisma";
-import { generateVerificationToken, sendVerificationEmail } from "@/utils/auth";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -28,17 +27,17 @@ export default async function handler(req, res) {
         email,
         password: hashedPassword,
         name,
-        emailVerified: false,
       },
     });
 
-    // Generate verification token
-    const verificationToken = generateVerificationToken(email);
-
-    // Send verification email
-    await sendVerificationEmail(email, verificationToken);
-
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      message: "User created successfully",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    });
   } catch (error) {
     res
       .status(500)

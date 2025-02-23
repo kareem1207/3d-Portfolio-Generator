@@ -1,0 +1,52 @@
+.dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 80px auto 0;
+}
+
+.loading {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.dashboard h1 {
+  margin-bottom: 2rem;
+  color: #2a9d8f;
+}
+
+.portfolioGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.createNew {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.createButton {
+  background: #2a9d8f;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.createButton:hover {
+  background: #238779;
+  transform: translateY(-2px);
+}

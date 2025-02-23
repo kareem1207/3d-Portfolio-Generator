@@ -1,47 +1,22 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { authConfig } from "@/config/authConfig";
-import { verifyPassword, hashPassword } from "@/utils/auth";
-import { prisma } from "@/lib/prisma";
+import GithubProvider from "next-auth/providers/github";
 
-export default NextAuth({
+export const authOptions = {
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-
-        if (!user) {
-          throw new Error("No user found with this email");
-        }
-
-        const isValid = await verifyPassword(
-          credentials.password,
-          user.password
-        );
-
-        if (!isValid) {
-          throw new Error("Invalid password");
-        }
-
-        if (!user.emailVerified) {
-          throw new Error("Please verify your email first");
-        }
-
-        return { id: user.id, email: user.email, name: user.name };
-      },
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    GoogleProvider(authConfig.providers.google),
-    GitHubProvider(authConfig.providers.github),
+    GithubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    }),
   ],
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
+  },
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
@@ -50,9 +25,19 @@ export default NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
+      if (session?.user) {
+        session.user.id = token.id;
+      }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
   },
-  pages: authConfig.pages,
-});
+};
+
+export default NextAuth(authOptions);
