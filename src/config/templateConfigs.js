@@ -69,9 +69,10 @@ export const templateConfigs = {
     description: "Create your own unique 3D template",
     features: [
       "Full customization control",
-      "Multiple object types",
-      "Custom animations",
-      "Advanced settings",
+      "Custom model support",
+      "Code editor for models",
+      "Interactive preview",
+      "Personal info display",
     ],
     customizationOptions: {
       geometries: ["box", "sphere", "cylinder", "torus", "cone"],
@@ -79,6 +80,20 @@ export const templateConfigs = {
       animations: ["none", "rotate", "float", "pulse"],
       interactions: ["drag", "click", "hover"],
       maxObjects: 10,
+      customModels: {
+        enabled: true,
+        maxCount: 5,
+        defaultCode: `
+new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshStandardMaterial({ color: '#ff0000' })
+)`,
+      },
+      text3D: {
+        fonts: ["helvetiker", "droid"],
+        sizes: [0.3, 0.5, 0.7],
+        heights: [0.1, 0.2, 0.3],
+      },
     },
   },
 };

@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars, Float } from "@react-three/drei";
-import styles from "@/styles/preview.module.css";
 import { modelConfigs } from "@/config/modelConfigs";
+import PortfolioPreview from "@/components/PortfolioPreview";
+import styles from "@/styles/preview.module.css";
 
 const ModelGroup = ({ models, customization, templateId }) => {
   if (!models || !modelConfigs[templateId]) return null;
@@ -183,7 +184,7 @@ const getTemplateComponent = (templateId) => {
   }
 };
 
-export default function Preview() {
+export default function PreviewPage() {
   const router = useRouter();
   const [settings, setSettings] = useState(null);
 
@@ -196,9 +197,13 @@ export default function Preview() {
     }
   }, [router]);
 
-  if (!settings) return <div>Loading...</div>;
-
-  const SelectedTemplate = getTemplateComponent(settings.templateId);
+  if (!settings) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.previewContainer}>
@@ -209,12 +214,8 @@ export default function Preview() {
         <button className={styles.publishButton}>Publish Portfolio</button>
       </div>
 
-      <div className={styles.previewCanvas}>
-        <SelectedTemplate
-          customization={settings.customization}
-          templateId={settings.templateId}
-          content={settings.content}
-        />
+      <div className={styles.previewContent}>
+        <PortfolioPreview fullScreen={true} />
       </div>
     </div>
   );

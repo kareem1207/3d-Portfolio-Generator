@@ -9,6 +9,8 @@ import styles from "@/styles/create.module.css";
 import { templateConfigs, getTemplateDefaults } from "@/config/templateConfigs";
 import dynamic from "next/dynamic";
 import ClientOnly from "@/components/ClientOnly";
+import UserProfileForm from "@/components/UserProfileForm";
+import PortfolioPreview from "@/components/PortfolioPreview";
 
 const ModelSelector = dynamic(() => import("@/components/ModelSelector"), {
   ssr: false,
@@ -93,8 +95,9 @@ export default function CreatePortfolio() {
     });
   };
 
-  const handleContentUpdate = (updates) => {
-    setContent(updates);
+  const handleContentUpdate = (contentData) => {
+    setContent(contentData);
+    // This will trigger the preview update automatically through the store
   };
 
   const handlePreview = () => {
@@ -220,8 +223,16 @@ export default function CreatePortfolio() {
 
       {step === 3 && (
         <section className={styles.contentSection}>
-          <h2>Add Your Content</h2>
-          <ContentForm onUpdate={handleContentUpdate} />
+          <div className={styles.splitView}>
+            <div className={styles.formPane}>
+              <h2>Add Your Content</h2>
+              <ContentForm onUpdate={handleContentUpdate} />
+            </div>
+            <div className={styles.previewPane}>
+              <h2>Live Preview</h2>
+              <PortfolioPreview />
+            </div>
+          </div>
           <div className={styles.navigationButtons}>
             <button className={styles.secondaryBtn} onClick={() => setStep(2)}>
               Back
@@ -232,7 +243,7 @@ export default function CreatePortfolio() {
                 onClick={handlePreview}
                 disabled={!content}
               >
-                View 3D Preview
+                View Full Screen Preview
               </button>
             </Link>
           </div>
