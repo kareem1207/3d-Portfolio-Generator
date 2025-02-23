@@ -1,5 +1,9 @@
 .modelSelector {
   margin: 2rem 0;
+  background: var(--background-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 1rem;
 }
 
 .modelsGrid {
@@ -38,4 +42,32 @@
   text-align: center;
   margin: 0;
   font-size: 0.9rem;
+}
+
+.modelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modelButton {
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--background-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modelButton:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.modelButton.selected {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }

@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import ClientOnly from "@/components/ClientOnly";
 import UserProfileForm from "@/components/UserProfileForm";
 import PortfolioPreview from "@/components/PortfolioPreview";
+import usePortfolioStore from "@/store/portfolioStore"; // Add this import
 
 const ModelSelector = dynamic(() => import("@/components/ModelSelector"), {
   ssr: false,
@@ -56,6 +57,14 @@ const previewComponents = {
 };
 
 export default function CreatePortfolio() {
+  const {
+    setTemplateSettings,
+    updateColors,
+    updateModels,
+    setUserData,
+    templateSettings,
+    userData, // Add this to destructuring
+  } = usePortfolioStore();
   const [step, setStep] = useState(1);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [customization, setCustomization] = useState(null);
@@ -70,8 +79,11 @@ export default function CreatePortfolio() {
   }));
 
   const handleTemplateSelect = (template) => {
+    setTemplateSettings({
+      id: template.id,
+      ...getTemplateDefaults(template.id),
+    });
     setSelectedTemplate(template);
-    setCustomization(getTemplateDefaults(template.id));
   };
 
   const handleNextStep = () => {
@@ -81,30 +93,30 @@ export default function CreatePortfolio() {
   };
 
   const handleCustomizationUpdate = (updates) => {
-    setCustomization({
+    setTemplateSettings({
       ...updates,
-      selectedModels: selectedModels,
+      models: selectedModels,
     });
+  };
+
+  const handleColorUpdate = (colors) => {
+    updateColors(colors);
   };
 
   const handleModelSelect = (models) => {
     setSelectedModels(models);
-    handleCustomizationUpdate({
-      ...customization,
-      selectedModels: models,
-    });
+    updateModels(models); // Use the updateModels action instead
   };
 
   const handleContentUpdate = (contentData) => {
-    setContent(contentData);
-    // This will trigger the preview update automatically through the store
+    setUserData(contentData);
   };
 
   const handlePreview = () => {
     const portfolioSettings = {
       templateId: selectedTemplate.id,
-      customization,
-      content,
+      customization: templateSettings, // Use templateSettings instead of customization
+      content: userData, // Use userData instead of content
     };
     localStorage.setItem(
       "portfolioSettings",
@@ -184,37 +196,29 @@ export default function CreatePortfolio() {
       {step === 2 && (
         <section className={styles.customizationSection}>
           <h2>Customize Your Portfolio</h2>
-          <div className={styles.previewCustomizeContainer}>
-            <div className={styles.livePreview}>
+          <div className={styles.customizationLayout}>
+            <div className={styles.previewSection}>
               <ClientOnly>
-                <selectedTemplate.preview
-                  customization={{
-                    ...customization,
-                    selectedModels,
-                  }}
-                />
+                <div className={styles.previewContainer}>
+                  <PortfolioPreview />
+                </div>
               </ClientOnly>
             </div>
-            <div className={styles.customizationTools}>
+
+            <div className={styles.controlsSection}>
               <CustomizationPanel onUpdate={handleCustomizationUpdate} />
-              <ClientOnly>
-                <ModelSelector
-                  templateId={selectedTemplate.id}
-                  selected={selectedModels}
-                  onSelect={handleModelSelect}
-                />
-              </ClientOnly>
+              <ModelSelector
+                selected={selectedModels}
+                onSelect={handleModelSelect}
+              />
             </div>
           </div>
+
           <div className={styles.navigationButtons}>
             <button className={styles.secondaryBtn} onClick={() => setStep(1)}>
               Back
             </button>
-            <button
-              className={styles.primaryBtn}
-              onClick={() => setStep(3)}
-              disabled={!customization}
-            >
+            <button className={styles.primaryBtn} onClick={() => setStep(3)}>
               Continue to Content
             </button>
           </div>
@@ -241,7 +245,7 @@ export default function CreatePortfolio() {
               <button
                 className={styles.primaryBtn}
                 onClick={handlePreview}
-                disabled={!content}
+                disabled={!userData?.name || !userData?.title} // Check for required fields
               >
                 View Full Screen Preview
               </button>

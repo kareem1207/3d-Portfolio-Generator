@@ -60,8 +60,11 @@ export default function ContentForm({ onUpdate }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setUserData(formData);
-    onUpdate(formData);
+    const updatedData = { ...formData };
+    setUserData(updatedData);
+    if (onUpdate) {
+      onUpdate(updatedData);
+    }
   };
 
   return (

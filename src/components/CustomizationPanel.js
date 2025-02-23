@@ -1,96 +1,103 @@
+"use client";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import styles from "@/styles/customization.module.css";
+import usePortfolioStore from "@/store/portfolioStore";
+import styles from "@/styles/customizationPanel.module.css";
 
-export default function CustomizationPanel({ onUpdate }) {
-  const [customization, setCustomization] = useState({
-    colors: {
-      primary: "#3498db",
-      secondary: "#2ecc71",
-      background: "#ffffff",
-    },
-    typography: {
-      headingFont: "Poppins",
-      bodyFont: "Inter",
-    },
-    layout: "grid",
-    animations: "moderate",
-  });
+export default function CustomizationPanel() {
+  const { templateSettings, setTemplateSettings } = usePortfolioStore();
 
-  const handleChange = (category, key, value) => {
-    setCustomization((prev) => ({
-      ...prev,
-      [category]:
-        typeof prev[category] === "object"
-          ? { ...prev[category], [key]: value }
-          : value,
-    }));
-    onUpdate({ ...customization, [category]: value });
+  const handleColorChange = (colorKey, value) => {
+    setTemplateSettings({
+      ...templateSettings,
+      colors: {
+        ...templateSettings.colors,
+        [colorKey]: value,
+      },
+    });
+  };
+
+  const handleMaterialChange = (property, value) => {
+    setTemplateSettings({
+      ...templateSettings,
+      material: {
+        ...templateSettings.material,
+        [property]: parseFloat(value),
+      },
+    });
   };
 
   return (
-    <div className={styles.customizationPanel}>
-      <section>
-        <h3>Color Scheme</h3>
-        <div className={styles.colorPickers}>
-          {Object.entries(customization.colors).map(([key, value]) => (
-            <div key={key}>
-              <label>{key}</label>
-              <input
-                type="color"
-                value={value}
-                onChange={(e) => handleChange("colors", key, e.target.value)}
-              />
-            </div>
-          ))}
+    <div className={styles.panel}>
+      <section className={styles.section}>
+        <h3>Colors</h3>
+        <div className={styles.colorInputs}>
+          <div className={styles.colorGroup}>
+            <label>Primary</label>
+            <input
+              type="color"
+              value={templateSettings.colors.primary}
+              onChange={(e) => handleColorChange("primary", e.target.value)}
+            />
+          </div>
+          <div className={styles.colorGroup}>
+            <label>Secondary</label>
+            <input
+              type="color"
+              value={templateSettings.colors.secondary}
+              onChange={(e) => handleColorChange("secondary", e.target.value)}
+            />
+          </div>
+          <div className={styles.colorGroup}>
+            <label>Background</label>
+            <input
+              type="color"
+              value={templateSettings.colors.background}
+              onChange={(e) => handleColorChange("background", e.target.value)}
+            />
+          </div>
         </div>
       </section>
 
-      <section>
-        <h3>Typography</h3>
-        <select
-          value={customization.typography.headingFont}
-          onChange={(e) =>
-            handleChange("typography", "headingFont", e.target.value)
-          }
-        >
-          <option value="Poppins">Poppins</option>
-          <option value="Roboto">Roboto</option>
-          <option value="Montserrat">Montserrat</option>
-        </select>
-        <select
-          value={customization.typography.bodyFont}
-          onChange={(e) =>
-            handleChange("typography", "bodyFont", e.target.value)
-          }
-        >
-          <option value="Inter">Inter</option>
-          <option value="Open Sans">Open Sans</option>
-          <option value="Lato">Lato</option>
-        </select>
+      <section className={styles.section}>
+        <h3>Material</h3>
+        <div className={styles.sliderGroup}>
+          <label>Metalness: {templateSettings.material.metalness}</label>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={templateSettings.material.metalness}
+            onChange={(e) => handleMaterialChange("metalness", e.target.value)}
+          />
+        </div>
+        <div className={styles.sliderGroup}>
+          <label>Roughness: {templateSettings.material.roughness}</label>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={templateSettings.material.roughness}
+            onChange={(e) => handleMaterialChange("roughness", e.target.value)}
+          />
+        </div>
       </section>
 
-      <section>
-        <h3>Layout</h3>
+      <section className={styles.section}>
+        <h3>Animation</h3>
         <select
-          value={customization.layout}
-          onChange={(e) => handleChange("layout", null, e.target.value)}
-        >
-          <option value="grid">Grid</option>
-          <option value="masonry">Masonry</option>
-          <option value="minimal">Minimal</option>
-        </select>
-      </section>
-
-      <section>
-        <h3>Animations</h3>
-        <select
-          value={customization.animations}
-          onChange={(e) => handleChange("animations", null, e.target.value)}
+          value={templateSettings.animations}
+          onChange={(e) =>
+            setTemplateSettings({
+              ...templateSettings,
+              animations: e.target.value,
+            })
+          }
+          className={styles.selectInput}
         >
           <option value="none">None</option>
           <option value="subtle">Subtle</option>
-          <option value="moderate">Moderate</option>
           <option value="dynamic">Dynamic</option>
         </select>
       </section>

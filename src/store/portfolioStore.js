@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 const usePortfolioStore = create(
   persist(
@@ -7,26 +7,60 @@ const usePortfolioStore = create(
       userData: {
         name: "",
         title: "",
-        about: "",
-        contact: "",
+        bio: "",
+        skills: "",
+        socialLinks: {
+          github: "",
+          linkedin: "",
+          twitter: "",
+        },
       },
-      selectedTemplate: null,
-      customModels: [],
-      templateConfig: {},
+      templateSettings: {
+        id: null,
+        colors: {
+          primary: "#2A9D8F",
+          secondary: "#264653",
+          background: "#ffffff",
+          text: "#000000",
+        },
+        animations: "none",
+        lighting: "soft",
+        material: {
+          metalness: 0,
+          roughness: 0.5,
+        },
+        models: [], // Each model should have: { type: 'box' | 'sphere' | 'cylinder', scale: number }
+      },
       setUserData: (data) => set({ userData: data }),
-      setSelectedTemplate: (template) => set({ selectedTemplate: template }),
-      addCustomModel: (model) =>
+      setTemplateSettings: (settings) =>
         set((state) => ({
-          customModels: [...state.customModels, model],
+          templateSettings: {
+            ...state.templateSettings,
+            ...settings,
+          },
         })),
-      removeCustomModel: (index) =>
+      updateColors: (colors) =>
         set((state) => ({
-          customModels: state.customModels.filter((_, i) => i !== index),
+          templateSettings: {
+            ...state.templateSettings,
+            colors: { ...state.templateSettings.colors, ...colors },
+          },
         })),
-      setTemplateConfig: (config) => set({ templateConfig: config }),
+      updateModels: (models) =>
+        set((state) => ({
+          templateSettings: {
+            ...state.templateSettings,
+            models: models.map((model) => ({
+              type: model.type,
+              scale: model.scale,
+              id: model.id,
+            })),
+          },
+        })),
     }),
     {
       name: "portfolio-storage",
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

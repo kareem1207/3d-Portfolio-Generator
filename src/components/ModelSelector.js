@@ -1,64 +1,48 @@
 "use client";
 import { useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import * as THREE from "three";
 import styles from "@/styles/modelSelector.module.css";
-import { modelConfigs } from "@/config/modelConfigs";
-import dynamic from "next/dynamic";
 
-const ModelPreview = dynamic(() => import("./ModelPreview"), {
-  ssr: false,
-  loading: () => <div className={styles.modelPreviewLoading}>Loading...</div>,
-});
+const availableModels = [
+  { id: "box1", type: "box", name: "Cube", scale: 1 },
+  { id: "sphere1", type: "sphere", name: "Sphere", scale: 1 },
+  { id: "cylinder1", type: "cylinder", name: "Cylinder", scale: 1 },
+  { id: "box2", type: "box", name: "Large Cube", scale: 1.5 },
+  { id: "sphere2", type: "sphere", name: "Large Sphere", scale: 1.5 },
+];
 
-export default function ModelSelector({ templateId, selected, onSelect }) {
-  if (!templateId || !modelConfigs[templateId]) {
-    return (
-      <div className={styles.modelSelector}>
-        <h3>No models available</h3>
-      </div>
-    );
-  }
+export default function ModelSelector({ onSelect, selected = [] }) {
+  const handleModelToggle = (model) => {
+    const isSelected = selected.find((m) => m.id === model.id);
+    let newSelected;
 
-  const config = modelConfigs[templateId];
-  const maxSelections = config?.maxSelections || 3; // Default to 3 if not specified
-  const availableModels = config?.available || [];
-
-  const handleToggleModel = (modelId) => {
-    const isSelected = selected.includes(modelId);
     if (isSelected) {
-      onSelect(selected.filter((id) => id !== modelId));
-    } else if (selected.length < maxSelections) {
-      onSelect([...selected, modelId]);
+      newSelected = selected.filter((m) => m.id !== model.id);
+    } else {
+      if (selected.length < 3) {
+        // Limit to 3 models
+        newSelected = [...selected, model];
+      } else {
+        return; // Don't add if limit reached
+      }
     }
-  };
 
-  if (availableModels.length === 0) {
-    return (
-      <div className={styles.modelSelector}>
-        <h3>No models available for this template</h3>
-      </div>
-    );
-  }
+    onSelect(newSelected);
+  };
 
   return (
     <div className={styles.modelSelector}>
-      <h3>Select 3D Models (Max: {maxSelections})</h3>
-      <div className={styles.modelsGrid}>
+      <h3>Select Models (max 3)</h3>
+      <div className={styles.modelGrid}>
         {availableModels.map((model) => (
-          <div
+          <button
             key={model.id}
-            className={`${styles.modelCard} ${
-              selected.includes(model.id) ? styles.selected : ""
+            className={`${styles.modelButton} ${
+              selected.find((m) => m.id === model.id) ? styles.selected : ""
             }`}
-            onClick={() => handleToggleModel(model.id)}
+            onClick={() => handleModelToggle(model)}
           >
-            <div className={styles.modelPreview}>
-              <ModelPreview model={model} />
-            </div>
-            <p>{model.name}</p>
-          </div>
+            {model.name}
+          </button>
         ))}
       </div>
     </div>

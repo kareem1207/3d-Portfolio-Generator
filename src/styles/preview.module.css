@@ -1,9 +1,88 @@
 .previewContainer {
   width: 100vw;
   height: 100vh;
-  position: relative;
   background: var(--background-primary);
-  padding-top: 80px; /* Add space for navbar */
+  position: relative;
+}
+
+.previewNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+.navLeft, .navRight {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.backButton, .publishButton, .exitButton {
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.backButton {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.publishButton {
+  background: var(--primary-color);
+  color: white;
+}
+
+.publishButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.exitButton {
+  background: transparent;
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.exitButton:hover {
+  background: rgba(255, 68, 68, 0.1);
+  border-color: rgba(255, 68, 68, 0.5);
+}
+
+.previewContent {
+  width: 100%;
+  height: calc(100vh - 60px);
+  padding-top: 60px;
+}
+
+@media (max-width: 768px) {
+  .previewNav {
+    padding: 0 1rem;
+  }
+  
+  .backButton, .publishButton, .exitButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
 }
 
 .previewHeader {
@@ -85,12 +164,6 @@
   z-index: 1;
 }
 
-.previewContent {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
 .loadingContainer {
   width: 100vw;
   height: 100vh;
@@ -108,4 +181,35 @@
 /* Dark mode support */
 [data-theme="dark"] .previewHeader {
   background: rgba(26, 26, 26, 0.9);
+}
+
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.exitButton {
+  padding: 0.5rem 1.5rem;
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.exitButton:hover {
+  background: var(--error-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.userInfo {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: white;
+  font-size: 0.9rem;
+  margin-right: 1rem;
 }
