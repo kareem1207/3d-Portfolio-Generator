@@ -31,6 +31,17 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config) => {
+    config.externals = [...(config.externals || []), { canvas: "canvas" }];
+    return config;
+  },
+  // Ensure we transpile specific problematic modules
+  transpilePackages: [
+    "three",
+    "three-mesh-bvh",
+    "@react-three/drei",
+    "@react-three/fiber",
+  ],
 };
 
 module.exports = nextConfig;
