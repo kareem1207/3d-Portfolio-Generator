@@ -8,7 +8,8 @@ import {
   Sphere,
   Cylinder,
 } from "@react-three/drei";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import * as THREE from "three";
 import usePortfolioStore from "@/store/portfolioStore";
 import styles from "@/styles/create.module.css";
 
@@ -67,24 +68,82 @@ function SocialLinks({ links, startPosition = [0, -2, 0] }) {
 }
 
 function ModelComponent({ type, scale = 1, position, material }) {
+  // Get model color from material or use a default
+  const modelMaterial = {
+    ...material,
+    color: material.modelColor || material.color || "#ffffff",
+  };
+
   switch (type) {
     case "box":
       return (
-        <Box args={[1, 1, 1]} position={position} scale={scale}>
-          <meshStandardMaterial {...material} />
-        </Box>
+        <mesh position={position} scale={scale}>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
       );
     case "sphere":
       return (
-        <Sphere args={[0.5, 32, 32]} position={position} scale={scale}>
-          <meshStandardMaterial {...material} />
-        </Sphere>
+        <mesh position={position} scale={scale}>
+          <sphereGeometry args={[0.5, 32, 32]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
       );
     case "cylinder":
       return (
-        <Cylinder args={[0.5, 0.5, 1, 32]} position={position} scale={scale}>
-          <meshStandardMaterial {...material} />
-        </Cylinder>
+        <mesh position={position} scale={scale}>
+          <cylinderGeometry args={[0.5, 0.5, 1, 32]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
+      );
+    case "cone":
+      return (
+        <mesh position={position} scale={scale}>
+          <coneGeometry args={[0.5, 1, 32]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
+      );
+    case "torus":
+      return (
+        <mesh position={position} scale={scale}>
+          <torusGeometry args={[0.5, 0.2, 16, 32]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
+      );
+    case "dodecahedron":
+      return (
+        <mesh position={position} scale={scale}>
+          <dodecahedronGeometry args={[0.5]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
+      );
+    case "icosahedron":
+      return (
+        <mesh position={position} scale={scale}>
+          <icosahedronGeometry args={[0.5]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
+      );
+    case "octahedron":
+      return (
+        <mesh position={position} scale={scale}>
+          <octahedronGeometry args={[0.5]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
+      );
+    case "tetrahedron":
+      return (
+        <mesh position={position} scale={scale}>
+          <tetrahedronGeometry args={[0.5]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
+      );
+    case "torusKnot":
+      return (
+        <mesh position={position} scale={scale}>
+          <torusKnotGeometry args={[0.3, 0.1, 64, 8]} />
+          <meshStandardMaterial color={modelMaterial.color} />
+        </mesh>
       );
     default:
       return null;
@@ -96,6 +155,7 @@ function Scene() {
 
   const materialProps = {
     color: templateSettings?.colors?.primary || "#ffffff",
+    modelColor: templateSettings?.modelColor || "#ffffff",
     metalness: templateSettings?.material?.metalness || 0,
     roughness: templateSettings?.material?.roughness || 0.5,
   };
@@ -181,7 +241,7 @@ function Scene() {
         {templateSettings?.models?.map((model, index) => (
           <ModelComponent
             key={index}
-            type={model.type || "box"}
+            type={model.type} // This should now correctly receive 'box', 'sphere', or 'cylinder'
             scale={model.scale || 1}
             position={[
               index * 2 - ((templateSettings.models.length || 1) - 1),
@@ -196,7 +256,15 @@ function Scene() {
   );
 }
 
-export default function PortfolioPreview({ fullScreen = false }) {
+// Remove the Model component as we're using ModelComponent
+// Remove renderModels function as it's no longer needed
+
+export default function PortfolioPreview({
+  fullScreen = false,
+  models = [],
+  theme,
+  modelColor,
+}) {
   const { templateSettings } = usePortfolioStore();
 
   return (
@@ -227,6 +295,7 @@ export default function PortfolioPreview({ fullScreen = false }) {
           autoRotate={templateSettings?.animations === "dynamic"}
           autoRotateSpeed={1}
         />
+        {/* Remove the renderModels() call here */}
       </Canvas>
     </div>
   );

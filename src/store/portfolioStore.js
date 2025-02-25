@@ -23,6 +23,7 @@ const usePortfolioStore = create(
           background: "#ffffff",
           text: "#000000",
         },
+        modelColor: "#ffffff",
         animations: "none",
         lighting: "soft",
         material: {
@@ -50,10 +51,9 @@ const usePortfolioStore = create(
         set((state) => ({
           templateSettings: {
             ...state.templateSettings,
-            models: models.map((model) => ({
-              type: model.type,
-              scale: model.scale,
-              id: model.id,
+            models: models.map((modelType) => ({
+              type: modelType,
+              scale: 1,
             })),
           },
         })),

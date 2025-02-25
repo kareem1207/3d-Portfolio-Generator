@@ -14,6 +14,8 @@ import PortfolioPreview from "@/components/PortfolioPreview";
 import usePortfolioStore from "@/store/portfolioStore"; // Add this import
 import { themeConfigs } from "@/utils/themeConfigs";
 import { modelDictionary } from "@/utils/modelDictionary";
+import ModelCustomizer from "@/components/ModelCustomizer";
+import ThemeModelsDisplay from "@/components/ThemeModelsDisplay"; // Add this import
 
 const ModelSelector = dynamic(() => import("@/components/ModelSelector"), {
   ssr: false,
@@ -73,6 +75,7 @@ export default function CreatePortfolio() {
   const [content, setContent] = useState(null);
   const [selectedModels, setSelectedModels] = useState([]);
   const [themeModels, setThemeModels] = useState([]);
+  const [modelColor, setModelColor] = useState("#ffffff");
 
   // Replace the templates array definition
   const templates = Object.entries(templateConfigs).map(([id, config]) => ({
@@ -180,6 +183,14 @@ export default function CreatePortfolio() {
     );
   };
 
+  const handleColorChange = (newColor) => {
+    setModelColor(newColor);
+    handleCustomizationUpdate({
+      ...templateSettings,
+      modelColor: newColor,
+    });
+  };
+
   const TemplateFeatures = ({ template }) => (
     <div className={styles.templateFeatures}>
       <h4>Features:</h4>
@@ -239,6 +250,7 @@ export default function CreatePortfolio() {
       {step === 1 && (
         <section className={styles.templateSelection}>
           <h2>Choose Your Template</h2>
+          <ThemeModelsDisplay /> {/* Add this line before the templatesGrid */}
           <div className={styles.templatesGrid}>
             {templates.map((template) => (
               <motion.div
@@ -284,12 +296,19 @@ export default function CreatePortfolio() {
                   <PortfolioPreview
                     models={selectedModels}
                     theme={selectedTemplate.name}
+                    modelColor={modelColor}
                   />
                 </div>
               </ClientOnly>
             </div>
 
             <div className={styles.controlsSection}>
+              <ModelCustomizer
+                theme={selectedTemplate.name}
+                onColorChange={handleColorChange}
+                onModelUpdate={handleModelSelect}
+                selectedModels={selectedModels}
+              />
               <CustomizationPanel
                 onUpdate={handleCustomizationUpdate}
                 theme={selectedTemplate.name}

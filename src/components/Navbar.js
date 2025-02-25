@@ -1,6 +1,5 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiSun, FiMoon } from "react-icons/fi";
@@ -9,16 +8,26 @@ import ClientOnly from "./ClientOnly";
 
 export default function Navbar() {
   const { data: session } = useSession();
-  const { theme, setTheme } = useTheme();
+  const [theme, setTheme] = useState("dark");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
   if (!mounted) {
     return null;
   }
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -31,7 +40,7 @@ export default function Navbar() {
       <div className={styles.navRight}>
         <ClientOnly>
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={toggleTheme}
             className={styles.themeToggle}
             aria-label="Toggle theme"
           >

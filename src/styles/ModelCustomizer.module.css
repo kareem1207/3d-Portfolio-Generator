@@ -1,0 +1,36 @@
+.customizer {
+  padding: 1rem;
+  background: var(--card-background);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.colorSection {
+  margin-bottom: 1rem;
+}
+
+.colorPicker {
+  position: relative;
+}
+
+.colorSwatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+}
+
+.popover {
+  position: absolute;
+  z-index: 2;
+  top: 45px;
+}
+
+.cover {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
