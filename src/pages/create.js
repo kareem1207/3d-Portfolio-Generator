@@ -245,7 +245,9 @@ export default function CreatePortfolio() {
               <button
                 className={styles.primaryBtn}
                 onClick={handlePreview}
-                disabled={!userData?.name || !userData?.title} // Check for required fields
+                disabled={
+                  !userData?.name || !userData?.email || !userData?.title
+                }
               >
                 View Full Screen Preview
               </button>

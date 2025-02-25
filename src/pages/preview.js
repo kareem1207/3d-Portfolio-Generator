@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useState } from "react";
 import PortfolioPreview from "@/components/PortfolioPreview";
 import styles from "@/styles/preview.module.css";
 import usePortfolioStore from "@/store/portfolioStore";
@@ -7,6 +8,55 @@ import usePortfolioStore from "@/store/portfolioStore";
 export default function PreviewPage() {
   const router = useRouter();
   const { userData, templateSettings } = usePortfolioStore();
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState(null);
+
+  const handlePublish = async () => {
+    setPublishing(true);
+    setPublishError(null);
+
+    // Validate required data
+    if (!userData?.name || !userData?.title) {
+      setPublishError("Name and title are required");
+      setPublishing(false);
+      return;
+    }
+
+    try {
+      const portfolioData = {
+        userData,
+        templateSettings,
+        userId: userData.email || `user_${Date.now()}`, // Fallback user ID
+        data: {
+          content: userData,
+          design: templateSettings,
+          timestamp: new Date().toISOString(),
+        },
+      };
+
+      const response = await fetch("/api/portfolio/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ portfolioData }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to publish");
+      }
+
+      alert(`Portfolio published successfully!\nURL: ${data.url}`);
+      router.push(`/portfolio/${data.portfolioId}`);
+    } catch (error) {
+      console.error("Publishing error:", error);
+      setPublishError(error.message);
+    } finally {
+      setPublishing(false);
+    }
+  };
 
   // Redirect if no data
   if (!userData?.name || !templateSettings) {
@@ -27,10 +77,13 @@ export default function PreviewPage() {
         <div className={styles.navRight}>
           <div className={styles.userInfo}>Previewing as: {userData.name}</div>
           <button
-            className={styles.publishButton}
-            onClick={() => alert("Publishing coming soon!")}
+            className={`${styles.publishButton} ${
+              publishing ? styles.publishing : ""
+            }`}
+            onClick={handlePublish}
+            disabled={publishing}
           >
-            Publish Portfolio
+            {publishing ? "Publishing..." : "Publish Portfolio"}
           </button>
           <button
             className={styles.exitButton}
@@ -40,6 +93,8 @@ export default function PreviewPage() {
           </button>
         </div>
       </nav>
+
+      {publishError && <div className={styles.errorBanner}>{publishError}</div>}
 
       <main className={styles.previewContent}>
         <PortfolioPreview fullScreen={true} />

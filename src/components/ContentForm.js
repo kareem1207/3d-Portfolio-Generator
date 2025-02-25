@@ -7,6 +7,7 @@ const defaultFormData = {
   name: "",
   title: "",
   bio: "",
+  email: "",
   skills: "",
   socialLinks: {
     github: "",
@@ -16,7 +17,7 @@ const defaultFormData = {
 };
 
 export default function ContentForm({ onUpdate }) {
-  const { setUserData, userData } = usePortfolioStore();
+  const { userData, setUserData } = usePortfolioStore();
   const [formData, setFormData] = useState(() => ({
     ...defaultFormData,
     ...userData,
@@ -94,6 +95,19 @@ export default function ContentForm({ onUpdate }) {
             onChange={handleChange}
             required
             placeholder="Full Stack Developer"
+          />
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label htmlFor="email">Email *</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            placeholder="john@example.com"
           />
         </div>
 

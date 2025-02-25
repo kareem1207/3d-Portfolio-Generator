@@ -55,6 +55,12 @@ export default function Navbar() {
           )}
         </ClientOnly>
       </div>
+
+      <div className={styles.links}>
+        <Link href="/examples" className={styles.link}>
+          View Examples
+        </Link>
+      </div>
     </nav>
   );
 }
