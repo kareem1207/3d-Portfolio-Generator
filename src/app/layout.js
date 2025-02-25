@@ -1,6 +1,5 @@
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "next-themes";
-import { SessionProvider } from "next-auth/react";
+import { Providers } from "../components/Providers";
 import Navbar from "@/components/Navbar";
 import "@/styles/globals.css";
 
@@ -15,12 +14,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <SessionProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Navbar />
-            {children}
-          </ThemeProvider>
-        </SessionProvider>
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

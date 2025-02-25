@@ -12,6 +12,8 @@ import ClientOnly from "@/components/ClientOnly";
 import UserProfileForm from "@/components/UserProfileForm";
 import PortfolioPreview from "@/components/PortfolioPreview";
 import usePortfolioStore from "@/store/portfolioStore"; // Add this import
+import { themeConfigs } from "@/utils/themeConfigs";
+import { modelDictionary } from "@/utils/modelDictionary";
 
 const ModelSelector = dynamic(() => import("@/components/ModelSelector"), {
   ssr: false,
@@ -70,6 +72,7 @@ export default function CreatePortfolio() {
   const [customization, setCustomization] = useState(null);
   const [content, setContent] = useState(null);
   const [selectedModels, setSelectedModels] = useState([]);
+  const [themeModels, setThemeModels] = useState([]);
 
   // Replace the templates array definition
   const templates = Object.entries(templateConfigs).map(([id, config]) => ({
@@ -78,12 +81,48 @@ export default function CreatePortfolio() {
     preview: previewComponents[config.name],
   }));
 
+  const getThemeKey = (templateName) => {
+    const themeMap = {
+      "Minimal 3D": "minimal3D",
+      "Creative Space": "creativeSpace",
+      "Professional 3D": "professional3D",
+      "Custom Template Builder": "custom",
+    };
+    return themeMap[templateName] || "minimal3D";
+  };
+
+  const getModelDictionaryKey = (templateName) => {
+    const modelMap = {
+      "Minimal 3D": "minimal",
+      "Creative Space": "creative",
+      "Professional 3D": "professional",
+      "Custom Template Builder": "custom",
+    };
+    return modelMap[templateName] || "minimal";
+  };
+
   const handleTemplateSelect = (template) => {
+    const themeKey = getThemeKey(template.name);
+    const modelKey = getModelDictionaryKey(template.name);
+
+    const themeConfig = themeConfigs[themeKey];
+    const modelConfig = modelDictionary[modelKey];
+
+    if (!themeConfig || !modelConfig) {
+      console.error("Theme or model configuration not found:", template.name);
+      return;
+    }
+
     setTemplateSettings({
       id: template.id,
       ...getTemplateDefaults(template.id),
+      maxModels: themeConfig.shapes.maxModels,
+      allowedModels: modelConfig.allowed,
     });
+
+    setThemeModels(modelConfig.allowed);
     setSelectedTemplate(template);
+    setSelectedModels([]); // Reset selected models when changing template
   };
 
   const handleNextStep = () => {
@@ -104,8 +143,25 @@ export default function CreatePortfolio() {
   };
 
   const handleModelSelect = (models) => {
+    if (!selectedTemplate) return;
+
+    const modelKey = getModelDictionaryKey(selectedTemplate.name);
+    const modelConfig = modelDictionary[modelKey];
+
+    if (!modelConfig) {
+      console.error("Model configuration not found");
+      return;
+    }
+
+    if (modelKey !== "custom" && models.length > modelConfig.maxCount) {
+      alert(
+        `${selectedTemplate.name} allows maximum ${modelConfig.maxCount} models`
+      );
+      return;
+    }
+
     setSelectedModels(models);
-    updateModels(models); // Use the updateModels action instead
+    updateModels(models);
   };
 
   const handleContentUpdate = (contentData) => {
@@ -141,6 +197,31 @@ export default function CreatePortfolio() {
       </ul>
     </div>
   );
+
+  const renderModelSelector = () => {
+    if (!selectedTemplate) return null;
+
+    const modelKey = getModelDictionaryKey(selectedTemplate.name);
+    const currentModelConfig = modelDictionary[modelKey];
+
+    if (!currentModelConfig) {
+      console.error("Model configuration not found");
+      return null;
+    }
+
+    return (
+      <div className={styles.modelSelection}>
+        <h3>Available Models for {selectedTemplate.name}</h3>
+        <ModelSelector
+          selected={selectedModels}
+          onSelect={handleModelSelect}
+          availableModels={currentModelConfig.allowed}
+          maxModels={currentModelConfig.maxCount}
+          isCustomTheme={selectedTemplate.name.includes("Custom")}
+        />
+      </div>
+    );
+  };
 
   return (
     <div className={styles.creatorContainer}>
@@ -200,17 +281,20 @@ export default function CreatePortfolio() {
             <div className={styles.previewSection}>
               <ClientOnly>
                 <div className={styles.previewContainer}>
-                  <PortfolioPreview />
+                  <PortfolioPreview
+                    models={selectedModels}
+                    theme={selectedTemplate.name}
+                  />
                 </div>
               </ClientOnly>
             </div>
 
             <div className={styles.controlsSection}>
-              <CustomizationPanel onUpdate={handleCustomizationUpdate} />
-              <ModelSelector
-                selected={selectedModels}
-                onSelect={handleModelSelect}
+              <CustomizationPanel
+                onUpdate={handleCustomizationUpdate}
+                theme={selectedTemplate.name}
               />
+              {renderModelSelector()}
             </div>
           </div>
 

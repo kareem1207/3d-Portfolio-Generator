@@ -1,0 +1,115 @@
+.modelSelector {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.selectedModels {
+  margin-bottom: 15px;
+}
+
+.modelTag {
+  display: inline-flex;
+  align-items: center;
+  background: #e3f2fd;
+  padding: 5px 10px;
+  border-radius: 15px;
+  margin: 5px;
+  font-size: 14px;
+}
+
+.modelTag button {
+  background: none;
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+  color: #f44336;
+  font-size: 16px;
+}
+
+.modelInput {
+  margin-top: 10px;
+}
+
+.modelInput select,
+.customInput input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.customInput {
+  display: flex;
+  gap: 10px;
+}
+
+.customInput input {
+  flex: 1;
+}
+
+.customInput button {
+  padding: 8px 16px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.customInput button:hover {
+  background: #1976d2;
+}
+
+.themeInfo {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.themeInfo h4 {
+  margin: 0;
+  color: #333;
+}
+
+.modelTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.error {
+  color: #f44336;
+  margin-top: 10px;
+  padding: 8px;
+  background: #ffebee;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modelSelect {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.removeButton {
+  padding: 0 6px;
+  background: none;
+  border: none;
+  color: #f44336;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.removeButton:hover {
+  color: #d32f2f;
+}

@@ -1,5 +1,13 @@
 const validateModelCode = (code) => {
   try {
+    // Add check for model size
+    if (code.length > 50000) {
+      return {
+        isValid: false,
+        error: "Model code exceeds size limit",
+      };
+    }
+
     // Basic validation - ensure code contains necessary Three.js elements
     const containsMesh = code.includes("mesh") || code.includes("Mesh");
     const containsGeometry =
@@ -22,6 +30,15 @@ const validateModelCode = (code) => {
       return {
         isValid: false,
         error: "Code contains unsafe patterns",
+      };
+    }
+
+    // Add check for basic Three.js scene setup
+    const hasSceneSetup = code.includes("scene.add") || code.includes("add(");
+    if (!hasSceneSetup) {
+      return {
+        isValid: false,
+        error: "Code must include scene setup",
       };
     }
 

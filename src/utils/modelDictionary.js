@@ -1,0 +1,52 @@
+export const modelDictionary = {
+  minimal: {
+    allowed: ["box", "sphere", "cylinder", "cone", "torus"],
+    maxCount: 5,
+  },
+  creative: {
+    allowed: [
+      "box",
+      "sphere",
+      "cylinder",
+      "cone",
+      "torus",
+      "torusKnot",
+      "octahedron",
+    ],
+    maxCount: 8,
+  },
+  professional: {
+    allowed: [
+      "box",
+      "sphere",
+      "cylinder",
+      "cone",
+      "torus",
+      "torusKnot",
+      "icosahedron",
+      "octahedron",
+      "dodecahedron",
+    ],
+    maxCount: 12,
+  },
+  custom: {
+    allowed: [
+      "box",
+      "sphere",
+      "cylinder",
+      "cone",
+      "torus",
+      "torusKnot",
+      "icosahedron",
+      "octahedron",
+      "dodecahedron",
+      "plane",
+      "capsule",
+      "circle",
+      "ring",
+      "tube",
+      "wireframe",
+    ],
+    maxCount: Infinity,
+  },
+};

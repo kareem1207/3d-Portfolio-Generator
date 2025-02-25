@@ -10,41 +10,51 @@ const availableModels = [
   { id: "sphere2", type: "sphere", name: "Large Sphere", scale: 1.5 },
 ];
 
-export default function ModelSelector({ onSelect, selected = [] }) {
-  const handleModelToggle = (model) => {
-    const isSelected = selected.find((m) => m.id === model.id);
-    let newSelected;
+const ModelSelector = ({
+  selected,
+  onSelect,
+  availableModels,
+  maxModels,
+  isCustomTheme,
+}) => {
+  const handleModelChange = (model) => {
+    const isSelected = selected.includes(model);
+    let newSelection;
 
     if (isSelected) {
-      newSelected = selected.filter((m) => m.id !== model.id);
+      newSelection = selected.filter((m) => m !== model);
     } else {
-      if (selected.length < 3) {
-        // Limit to 3 models
-        newSelected = [...selected, model];
-      } else {
-        return; // Don't add if limit reached
+      if (!isCustomTheme && selected.length >= maxModels) {
+        alert(`Maximum ${maxModels} models allowed for this template`);
+        return;
       }
+      newSelection = [...selected, model];
     }
 
-    onSelect(newSelected);
+    onSelect(newSelection);
   };
 
   return (
     <div className={styles.modelSelector}>
-      <h3>Select Models (max 3)</h3>
-      <div className={styles.modelGrid}>
+      <div className={styles.modelList}>
         {availableModels.map((model) => (
           <button
-            key={model.id}
+            key={model}
             className={`${styles.modelButton} ${
-              selected.find((m) => m.id === model.id) ? styles.selected : ""
+              selected.includes(model) ? styles.selected : ""
             }`}
-            onClick={() => handleModelToggle(model)}
+            onClick={() => handleModelChange(model)}
           >
-            {model.name}
+            {model}
           </button>
         ))}
       </div>
+      <div className={styles.modelCount}>
+        Selected: {selected.length}
+        {!isCustomTheme && ` / ${maxModels}`}
+      </div>
     </div>
   );
-}
+};
+
+export default ModelSelector;
