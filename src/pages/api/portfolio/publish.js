@@ -1,58 +1,31 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
-import useExamplePortfoliosStore from "@/store/examplePortfoliosStore";
-import { savePortfolio } from "@/utils/portfolioDb";
-import clientPromise from "../../../lib/mongodb";
+import dbConnect from "@/lib/dbConnect";
+import Portfolio from "@/models/Portfolio";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
   try {
-    const { portfolioData } = req.body;
-
-    // Validate required fields
-    if (!portfolioData) {
-      return res.status(400).json({ error: "Portfolio data is required" });
-    }
-
-    // Check for required user data
-    if (!portfolioData.userData?.name || !portfolioData.userData?.title) {
-      return res.status(400).json({ error: "Name and title are required" });
-    }
-
-    // Generate unique ID
-    const portfolioId = `portfolio_${Date.now()}_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-    // Use the Vercel deployment URL
-    const portfolioUrl = `https://3d-portfolio-generator.vercel.app/portfolio/${portfolioId}`;
-
-    // Structure the data
-    const dataToSave = {
-      portfolioId,
-      portfolioUrl,
-      ...portfolioData,
-      createdAt: new Date().toISOString(),
+    await dbConnect();
+    const portfolioData = {
+      ...req.body,
+      userId: session.user.id,
+      publishedAt: new Date(),
+      status: "published",
     };
 
-    // Save to MongoDB
-    const client = await clientPromise;
-    const db = client.db("portfoliodb"); // Updated database name
-    await db.collection("portfolios").insertOne(dataToSave);
-
-    return res.status(200).json({
-      success: true,
-      url: portfolioUrl,
-      portfolioId,
-      message: "Portfolio published successfully!",
-    });
+    const portfolio = await Portfolio.create(portfolioData);
+    return res.status(201).json(portfolio);
   } catch (error) {
     console.error("Publish error:", error);
-    return res.status(500).json({
-      error: "Failed to publish portfolio",
-      details: error.message,
-    });
+    return res.status(500).json({ error: "Failed to publish portfolio" });
   }
 }

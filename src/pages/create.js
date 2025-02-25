@@ -15,12 +15,20 @@ import usePortfolioStore from "@/store/portfolioStore"; // Add this import
 import { themeConfigs } from "@/utils/themeConfigs";
 import { modelDictionary } from "@/utils/modelDictionary";
 import ModelCustomizer from "@/components/ModelCustomizer";
-import ThemeModelsDisplay from "@/components/ThemeModelsDisplay"; // Add this import
 
 const ModelSelector = dynamic(() => import("@/components/ModelSelector"), {
   ssr: false,
   loading: () => <div>Loading 3D components...</div>,
 });
+
+// Add this with other dynamic imports
+const ThemeModelsDisplay = dynamic(
+  () => import("@/components/ThemeModelsDisplay"),
+  {
+    ssr: false,
+    loading: () => <div>Loading model previews...</div>,
+  }
+);
 
 // Dynamic imports for preview components
 const MinimalPreview = dynamic(
@@ -172,10 +180,11 @@ export default function CreatePortfolio() {
   };
 
   const handlePreview = () => {
+    // Just save to localStorage and navigate, no alert
     const portfolioSettings = {
       templateId: selectedTemplate.id,
-      customization: templateSettings, // Use templateSettings instead of customization
-      content: userData, // Use userData instead of content
+      customization: templateSettings,
+      content: userData,
     };
     localStorage.setItem(
       "portfolioSettings",

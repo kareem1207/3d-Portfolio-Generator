@@ -2,6 +2,12 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 export async function middleware(request) {
+  // Ensure environment variables are available
+  if (!process.env.MONGODB_URI) {
+    console.error("Required environment variables are missing");
+    return NextResponse.error();
+  }
+
   const token = await getToken({ req: request });
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
 
@@ -20,5 +26,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/:path*"],
+  matcher: ["/dashboard/:path*", "/auth/:path*", "/api/:path*"],
 };

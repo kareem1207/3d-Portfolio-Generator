@@ -3,12 +3,9 @@ import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/Navbar";
 import "@/styles/globals.css";
 
-export default function App({
-  Component,
-  pageProps: { session, ...pageProps },
-}) {
+function App({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={session} refetchInterval={0}>
       <ThemeProvider attribute="data-theme">
         <Navbar />
         <Component {...pageProps} />
@@ -16,3 +13,5 @@ export default function App({
     </SessionProvider>
   );
 }
+
+export default App;

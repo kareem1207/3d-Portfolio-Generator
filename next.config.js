@@ -5,8 +5,10 @@ const nextConfig = {
     domains: ["lh3.googleusercontent.com", "avatars.githubusercontent.com"],
   },
   env: {
-    NEXTAUTH_URL: "https://3d-portfolio-generator.vercel.app",
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXT_PUBLIC_BASE_URL: "https://3d-portfolio-generator.vercel.app",
+    MONGODB_URI: process.env.MONGODB_URI,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   },
   async headers() {
     return [
@@ -31,7 +33,13 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
     config.externals = [...(config.externals || []), { canvas: "canvas" }];
     return config;
   },

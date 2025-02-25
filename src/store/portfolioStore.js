@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 const usePortfolioStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       userData: {
         name: "",
         title: "",
@@ -57,6 +57,82 @@ const usePortfolioStore = create(
             })),
           },
         })),
+      savePortfolio: async () => {
+        const state = get();
+        const portfolioData = {
+          templateId: state.templateSettings.id,
+          settings: state.templateSettings,
+          userData: state.userData,
+        };
+
+        try {
+          const response = await fetch("/api/portfolios", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(portfolioData),
+          });
+
+          if (!response.ok) throw new Error("Failed to save portfolio");
+
+          const savedPortfolio = await response.json();
+          return savedPortfolio;
+        } catch (error) {
+          console.error("Error saving portfolio:", error);
+          throw error;
+        }
+      },
+
+      loadPortfolios: async () => {
+        try {
+          const response = await fetch("/api/portfolios");
+          if (!response.ok) throw new Error("Failed to load portfolios");
+          const portfolios = await response.json();
+          return portfolios;
+        } catch (error) {
+          console.error("Error loading portfolios:", error);
+          throw error;
+        }
+      },
+
+      publishPortfolio: async () => {
+        const state = get();
+        // Format the portfolio data
+        const portfolioData = {
+          templateId: state.templateSettings.id,
+          settings: {
+            ...state.templateSettings,
+            models: state.templateSettings.models.map((model) => ({
+              type: model.type,
+              scale: Number(model.scale || 1),
+            })),
+          },
+          userData: state.userData,
+        };
+
+        try {
+          const response = await fetch("/api/publish", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(portfolioData),
+            credentials: "include",
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Failed to publish portfolio");
+          }
+
+          return data;
+        } catch (error) {
+          console.error("Publishing error:", error);
+          throw error;
+        }
+      },
     }),
     {
       name: "portfolio-storage",
