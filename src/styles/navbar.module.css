@@ -3,22 +3,55 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  height: 80px; /* Fixed height for navbar */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+  height: 80px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2a9d8f;
+  color: var(--primary-color);
   text-decoration: none;
+  position: relative;
+  padding: 0.5rem 0;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logo::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover::after {
+  transform: scaleX(1);
 }
 
 .navLinks {
@@ -28,52 +61,118 @@
 }
 
 .navLink {
-  color: #666;
+  color: var(--text-secondary);
   text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
   transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, rgba(var(--primary-color), 0.1), rgba(var(--primary-hover), 0.1));
+  border-radius: 8px;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
 }
 
 .navLink:hover {
-  background: rgba(42, 157, 143, 0.1);
-  color: #2a9d8f;
+  color: var(--primary-color);
+}
+
+.navLink:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .signInBtn, .signOutBtn, .registerBtn {
-  padding: 0.5rem 1.5rem;
-  border-radius: 4px;
+  padding: 0.6rem 1.6rem;
+  border-radius: 8px;
   border: none;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  letter-spacing: 0.02em;
 }
 
 .signInBtn {
   background: transparent;
-  border: 2px solid #2a9d8f;
-  color: #2a9d8f;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.signInBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-color);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.signInBtn:hover {
+  color: white;
+}
+
+.signInBtn:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .registerBtn {
-  background: #2a9d8f;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
   text-decoration: none;
+  box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
+}
+
+.registerBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(42, 157, 143, 0.4);
 }
 
 .signOutBtn {
-  background: #ef476f;
+  background: linear-gradient(135deg, #ef476f, #d64161);
   color: white;
+  box-shadow: 0 4px 12px rgba(239, 71, 111, 0.3);
+}
+
+.signOutBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(239, 71, 111, 0.4);
 }
 
 .userEmail {
-  color: #666;
+  color: var(--text-secondary);
   margin-right: 1rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .navLeft {
   display: flex;
   align-items: center;
+  gap: 1.5rem;
 }
 
 .navRight {
@@ -85,7 +184,7 @@
 .themeToggle {
   background: transparent;
   border: none;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -94,13 +193,66 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .themeToggle:hover {
-  background: rgba(42, 157, 143, 0.1);
-  color: #2a9d8f;
+  background: rgba(var(--primary-color), 0.1);
+  color: var(--primary-color);
+  border-color: rgba(var(--primary-color), 0.2);
+  transform: rotate(30deg);
 }
 
 [data-theme="dark"] .themeToggle {
-  color: #fff;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem 1.2rem;
+  }
+  
+  .navLinks {
+    gap: 0.5rem;
+  }
+  
+  .navLink, .signInBtn, .signOutBtn, .registerBtn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .userEmail {
+    display: none;
+  }
+}
+
+/* Smooth navbar scroll animation */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navbar {
+  animation: fadeInDown 0.5s ease;
+}
+
+/* Add subtle shimmer effect to buttons on hover */
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.registerBtn:hover, .signOutBtn:hover {
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
 }

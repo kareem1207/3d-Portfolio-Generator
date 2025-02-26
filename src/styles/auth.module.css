@@ -85,7 +85,8 @@
   gap: 1rem;
 }
 
-.googleBtn, .githubBtn {
+.googleBtn,
+.githubBtn {
   width: 100%;
   padding: 1rem;
   border-radius: 8px;
@@ -131,7 +132,7 @@
 
 .oauthDivider::before,
 .oauthDivider::after {
-  content: '';
+  content: "";
   flex: 1;
   border-bottom: 1px solid #ddd;
 }

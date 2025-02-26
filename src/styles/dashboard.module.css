@@ -2,6 +2,18 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 80px auto 0;
+  position: relative;
+}
+
+.dashboard::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+  opacity: 0.7;
 }
 
 .loading {
@@ -10,12 +22,47 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  color: #666;
+  color: var(--text-secondary);
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.loading::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border: 3px solid transparent;
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .dashboard h1 {
   margin-bottom: 2rem;
-  color: #2a9d8f;
+  position: relative;
+  font-size: 2.5rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.dashboard h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), transparent);
+  border-radius: 2px;
 }
 
 .portfolioGrid {
@@ -23,30 +70,113 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
+  perspective: 1000px;
+}
+
+.portfolioGrid > * {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.portfolioGrid > *:nth-child(1) { animation-delay: 0.1s; }
+.portfolioGrid > *:nth-child(2) { animation-delay: 0.2s; }
+.portfolioGrid > *:nth-child(3) { animation-delay: 0.3s; }
+.portfolioGrid > *:nth-child(4) { animation-delay: 0.4s; }
+.portfolioGrid > *:nth-child(5) { animation-delay: 0.5s; }
+.portfolioGrid > *:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .createNew {
-  border: 2px dashed #ddd;
-  border-radius: 8px;
+  border: 2px dashed var(--border-color);
+  border-radius: 16px;
   padding: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
+  min-height: 250px;
+  background: linear-gradient(
+    135deg,
+    var(--background-secondary),
+    rgba(255, 255, 255, 0.05)
+  );
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.createNew::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, 
+                            rgba(var(--primary-color), 0.1), 
+                            transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.createNew:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 
+    0 15px 30px rgba(0, 0, 0, 0.1),
+    0 10px 15px rgba(71, 85, 105, 0.1);
+}
+
+.createNew:hover::before {
+  opacity: 1;
 }
 
 .createButton {
-  background: #2a9d8f;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
   border: none;
   padding: 1rem 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.createButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
 }
 
 .createButton:hover {
-  background: #238779;
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(42, 157, 143, 0.3);
+}
+
+.createButton:hover::before {
+  opacity: 1;
+}
+
+.createButton:active {
+  transform: translateY(1px);
 }
