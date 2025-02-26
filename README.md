@@ -2,7 +2,6 @@
 
 Welcome to 3D Portfolio Generator! This tool allows you to create stunning 3D portfolios to showcase your work, skills, and experiences in an immersive and interactive environment.
 
-![3D Portfolio Generator](./assets/images/preview.png)
 
 ## 🚀 Features
 
